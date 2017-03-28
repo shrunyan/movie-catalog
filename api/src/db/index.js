@@ -1,34 +1,43 @@
 const mysql = require('mysql2')
 const connPool = mysql.createPool({
-  connectionLimit: Number(process.env.SQL_CONN_LIMIT),
+  connectionLimit: process.env.SQL_CONN_LIMIT,
   host: process.env.SQL_HOST,
   user: process.env.SQL_USER,
   password: process.env.SQL_PASSWORD,
   database: process.env.SQL_DATABASE
 })
 
-// console.log(connPool)
+function run(sql, values, resolve, reject) {
+  connPool.query(sql, values, (err, result) => {
+    if (!err) {
+      // console.log('results', result.insertId)
+      resolve(result.insertId)
+    } else {
+      reject(err)
+    }
+  })
+}
 
 module.exports = {
   createMovie: ({title, category}) => {
     if (!title) {
-      return Promise.resolve()
+      return Promise.resolve(null)
     }
 
     return new Promise((resolve, reject) => {
-      // console.log('createMovie', title)
-
-      const sql = "INSERT INTO `movies` ('title', 'category') VALUES(?,?)"
+      const sql = "INSERT INTO `movies` (title, category) VALUES (?,?)"
       const values = [title, category]
 
-      connPool.query(sql, values, (err, result) => {
-        console.error(err, result)
-        if (!err) {
-          resolve(result)
-        } else {
-          reject(err)
-        }
-      })
+      run(sql, values, resolve, reject)
+    })
+  },
+  getMovie: (title) => {
+    if (!title) {
+      return Promise.resolve(null)
+    }
+    return new Promise((resolve, reject) => {
+      const sql = "SELECT FROM `movies` WHERE `title` = ?"
+      run(sql, [title], resolve, reject)
     })
   }
 }
