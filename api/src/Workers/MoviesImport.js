@@ -15,11 +15,13 @@ let parser = new MoviesJsonParser({
 })
 
 parser.on('data', (chunk) => {
+  parser.pause()
+
   var rows = JSON.parse(chunk)
   var promises = rows.map(row => db.createMovie(row))
 
   Promise.all(promises)
-    .then(results => console.log(results.length))
+    .then(results => parser.resume())
     .catch(err => console.error(err))
 })
 
