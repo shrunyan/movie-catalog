@@ -6,32 +6,36 @@ const db = require('../db')
 const fs = require('fs')
 const MoviesJsonParser = require('../Parsers/MoviesJsonParser')
 
-const file = __dirname + '/../../../data/movies.list'
-let stream = fs.createReadStream(file, {
-  encoding: 'utf8'
-})
-let parser = new MoviesJsonParser({
-  objectMode: true
-})
+function MoviesImport(file) {
+  let stream = fs.createReadStream(file, {
+    encoding: 'utf8'
+  })
+  let parser = new MoviesJsonParser({
+    objectMode: true
+  })
 
-parser.on('data', (chunk) => {
-  parser.pause()
-  process.stdout.write('.')
+  parser.on('data', (chunk) => {
+    parser.pause()
+    process.stdout.write('.')
 
-  var movies = JSON.parse(chunk)
-  var promise = db.createMovies(movies)
+    var movies = JSON.parse(chunk)
+    var promise = db.createMovies(movies)
 
-  promise
-    .then(() => parser.resume())
-    .catch(err => console.error(err))
-})
+    promise
+      .then(() => parser.resume())
+      .catch(err => console.error(err))
+  })
 
-parser.on('error', (err) => {
-  console.log('stream error', err);
-})
+  parser.on('error', (err) => {
+    console.log('stream error', err);
+  })
 
-parser.on('end', () => {
-  console.log('stream ended');
-})
+  parser.on('end', () => {
+    console.log('stream ended');
+  })
 
-stream.pipe(parser)
+  return stream.pipe(parser)
+}
+
+MoviesImport(__dirname + '/../../../data/movies.list')
+// module.exports = MoviesImport
