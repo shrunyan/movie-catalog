@@ -16,17 +16,18 @@ let parser = new MoviesJsonParser({
 
 parser.on('data', (chunk) => {
   parser.pause()
+  process.stdout.write('.')
 
-  var rows = JSON.parse(chunk)
-  var promises = rows.map(row => db.createMovie(row))
+  var movies = JSON.parse(chunk)
+  var promise = db.createMovies(movies)
 
-  Promise.all(promises)
-    .then(results => parser.resume())
+  promise
+    .then(() => parser.resume())
     .catch(err => console.error(err))
 })
 
-parser.on('error', () => {
-  console.log('stream error');
+parser.on('error', (err) => {
+  console.log('stream error', err);
 })
 
 parser.on('end', () => {

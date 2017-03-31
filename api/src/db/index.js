@@ -18,14 +18,25 @@ function run(sql, values, resolve, reject) {
 }
 
 module.exports = {
-  createMovie: (movie) => {
-    if (!movie.title) {
-      return Promise.resolve(null)
+  createMovies: (movies) => {
+    if (!Array.isArray(movies)) {
+      throw new TypeError("Movies must be an Array")
     }
-
     return new Promise((resolve, reject) => {
-      const sql = "INSERT INTO `movies` (title, category) VALUES (?,?)"
-      const values = [movie.title, movie.category]
+      let values = []
+      let sql = "INSERT IGNORE INTO `movies` (title, category) VALUES "
+
+      movies.forEach(movie => {
+        if (movie.title) {
+          sql += "(?,?),"
+          Object.keys(movie).forEach(key => {
+            values.push(movie[key])
+          })
+        }
+      })
+
+      // remove ending comma
+      sql = sql.slice(0, -1)
 
       run(sql, values, resolve, reject)
     })
