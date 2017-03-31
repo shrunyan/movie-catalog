@@ -1,6 +1,6 @@
 var Transform = require('stream').Transform
 
-module.exports = class MovieParser extends Transform{
+module.exports = class MoviesJsonParser extends Transform {
   constructor(options) {
     super(options)
   }
@@ -13,13 +13,12 @@ module.exports = class MovieParser extends Transform{
       const title = /{(.*?)}/.exec(line)
 
       return {
-        title: title ? title[0] : null,
-        category: category ? category[0] : null
+        title: title ? title['0'] : null,
+        category: category ? category['0'] : null
       }
     })
 
-    console.log('rows length', rows.length)
-
     this.push(JSON.stringify(rows))
+    callback()
   }
 }

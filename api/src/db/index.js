@@ -10,7 +10,6 @@ const connPool = mysql.createPool({
 function run(sql, values, resolve, reject) {
   connPool.query(sql, values, (err, result) => {
     if (!err) {
-      // console.log('results', result.insertId)
       resolve(result.insertId)
     } else {
       reject(err)
@@ -19,14 +18,14 @@ function run(sql, values, resolve, reject) {
 }
 
 module.exports = {
-  createMovie: ({title, category}) => {
-    if (!title) {
+  createMovie: (movie) => {
+    if (!movie.title) {
       return Promise.resolve(null)
     }
 
     return new Promise((resolve, reject) => {
       const sql = "INSERT INTO `movies` (title, category) VALUES (?,?)"
-      const values = [title, category]
+      const values = [movie.title, movie.category]
 
       run(sql, values, resolve, reject)
     })

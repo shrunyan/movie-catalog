@@ -1,20 +1,34 @@
-require('dotenv').load()
+require('dotenv').config({
+  path: __dirname + '/../../.env'
+})
 
 const db = require('../db')
 const fs = require('fs')
-const MovieParser = require('../Parsers/MovieParser')
+const MoviesJsonParser = require('../Parsers/MoviesJsonParser')
 
-const FILE = process.cwd() + '/../data/movies.list'
-const stream = fs.createReadStream(FILE, {encoding: 'utf8'})
-const parser = new MovieParser()
+const file = __dirname + '/../../../data/movies.list'
+let stream = fs.createReadStream(file, {
+  encoding: 'utf8'
+})
+let parser = new MoviesJsonParser({
+  objectMode: true
+})
 
 parser.on('data', (chunk) => {
-  var str = chunk.toString()
-  var rows = JSON.parse(str)
+  var rows = JSON.parse(chunk)
   var promises = rows.map(row => db.createMovie(row))
 
   Promise.all(promises)
+    .then(results => console.log(results.length))
     .catch(err => console.error(err))
+})
+
+parser.on('error', () => {
+  console.log('stream error');
+})
+
+parser.on('end', () => {
+  console.log('stream ended');
 })
 
 stream.pipe(parser)
