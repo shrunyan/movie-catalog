@@ -18,7 +18,7 @@ function run(sql, values, resolve, reject) {
 }
 
 module.exports = {
-  createMovies: (movies) => {
+  createRecords: (movies) => {
     if (!Array.isArray(movies)) {
       throw new TypeError("Movies must be an Array")
     }
@@ -41,13 +41,69 @@ module.exports = {
       run(sql, values, resolve, reject)
     })
   },
-  getMovie: (title) => {
-    if (!title) {
-      return Promise.resolve(null)
-    }
-    return new Promise((resolve, reject) => {
-      const sql = "SELECT FROM `movies` WHERE `title` = ?"
-      run(sql, [title], resolve, reject)
-    })
-  }
+
+
+
+
+  // createMovies: (movies) => {
+  //   if (!Array.isArray(movies)) {
+  //     throw new TypeError("Movies must be an Array")
+  //   }
+  //   return new Promise((resolve, reject) => {
+  //     let values = []
+  //     let sql = "INSERT IGNORE INTO `movies` (title, category) VALUES "
+
+  //     movies.forEach(movie => {
+  //       if (movie.title) {
+  //         sql += "(?,?),"
+  //         Object.keys(movie).forEach(key => {
+  //           values.push(movie[key])
+  //         })
+  //       }
+  //     })
+
+  //     // remove ending comma
+  //     sql = sql.slice(0, -1)
+
+  //     run(sql, values, resolve, reject)
+  //   })
+  // },
+  // createShows: (shows) => {
+  //   if (!Array.isArray(shows)) {
+  //     throw new TypeError("shows must be an Array")
+  //   }
+  //   return new Promise((resolve, reject) => {
+  //     let values = []
+  //     let columns = Object.keys(shows[0].join(','))
+  //     let sql = `INSERT IGNORE INTO \`shows\` (${columns}) VALUES `
+
+  //     // For each show entry dynamically
+  //     // add sql and values
+  //     shows.forEach(show => {
+  //       if (show.series && show.episode_title) {
+  //         const cols = Object.keys(show)
+  //         // sql += Array(cols.length).map(_ => '?').join(',').slice(0, -1)
+  //         sql += `({?,?}),`
+
+  //         Object.keys(show).forEach(key => {
+  //           values.push(show[key])
+  //         })
+  //       }
+  //     })
+
+  //     // remove ending comma
+  //     sql = sql.slice(0, -1)
+
+  //     run(sql, values, resolve, reject)
+  //   })
+  // },
+  // getMovie: (title) => {
+  //   if (!title) {
+  //     return Promise.resolve(null)
+  //   }
+  //   return new Promise((resolve, reject) => {
+  //     const sql = "SELECT FROM `movies` WHERE `title` = ?"
+  //     run(sql, [title], resolve, reject)
+  //   })
+  // }
 }
