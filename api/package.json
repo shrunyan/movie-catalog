@@ -17,6 +17,7 @@
     "mysql2": "^1.2.0"
   },
   "devDependencies": {
-    "now": "^4.10.2"
+    "now": "^4.10.2",
+    "standard": "^10.0.3"
   }
 }
