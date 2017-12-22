@@ -7,43 +7,69 @@ const connPool = mysql.createPool({
   database: process.env.SQL_DATABASE
 })
 
-function run(sql, values, resolve, reject) {
-  connPool.query(sql, values, (err, result) => {
-    if (!err) {
-      resolve(result.insertId)
-    } else {
-      reject(err)
+// function run (sql, values, resolve, reject) {
+//   connPool.query(sql, values, (err, result) => {
+//     if (!err) {
+//       resolve(result.insertId)
+//     } else {
+//       reject(err)
+//     }
+//   })
+// }
+
+
+function insertShowQuery (records) {
+  let values = []
+  let sql = 'INSERT IGNORE INTO `shows` (show_title, category) VALUES '
+
+  records.forEach(record => {
+    if (record.show_title) {
+      // console.log(record)
+
+      sql += '(?,?),'
+
+      values.push(record['show_title'])
+      values.push(record['category']) // TODO deal with undefined values
+
+      // Object.keys(record).forEach(key => {
+      //   values.push(record[key])
+      // })
     }
   })
+
+  // remove ending comma
+  sql = sql.slice(0, -1)
+
+  return [sql, values]
 }
 
 module.exports = {
-  createRecords: (movies) => {
-    if (!Array.isArray(movies)) {
-      throw new TypeError("Movies must be an Array")
+  createRecords: (table, records) => {
+    if (!Array.isArray(records)) {
+      throw new TypeError('Must be an Array of Movies/Shows')
     }
-    return new Promise((resolve, reject) => {
-      let values = []
-      let sql = "INSERT IGNORE INTO `movies` (title, category) VALUES "
 
-      movies.forEach(movie => {
-        if (movie.title) {
-          sql += "(?,?),"
-          Object.keys(movie).forEach(key => {
-            values.push(movie[key])
-          })
+    return new Promise((resolve, reject) => {
+      // let sql = ''
+
+      if (table === 'shows') {
+        var [sql, values] = insertShowQuery(records)
+      } else if (table === 'movies') {
+        console.log('TODO Build movie insert query')
+      }
+
+      console.log(sql)
+      console.log(values)
+
+      connPool.execute(sql, values, (err, result) => {
+        if (!err) {
+          resolve(result.insertId)
+        } else {
+          reject(err)
         }
       })
-
-      // remove ending comma
-      sql = sql.slice(0, -1)
-
-      run(sql, values, resolve, reject)
     })
-  },
-
-
-
+  }
 
   // createMovies: (movies) => {
   //   if (!Array.isArray(movies)) {

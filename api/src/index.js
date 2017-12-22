@@ -16,7 +16,7 @@ app.use(cors())
 app.use(bodyParser.json())
 
 app.get('/', (req, res) => {
- res.send('healthy')
+  res.send('healthy')
 })
 app.post('/signup', (req, res) => {
   const key = datastore.key('Signups')
