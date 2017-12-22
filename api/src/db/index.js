@@ -17,7 +17,6 @@ const connPool = mysql.createPool({
 //   })
 // }
 
-
 function insertShowQuery (records) {
   let values = []
   let sql = 'INSERT IGNORE INTO `shows` (show_title, category) VALUES '
